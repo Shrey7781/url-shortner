@@ -1,6 +1,9 @@
 package models
 
-
+type TagRequest struct {
+	ShortID string `json:"shortid"`
+	Tag     string `json:"tag"`
+}
 
 type Request struct {
 	URL         string        `json:"url"`

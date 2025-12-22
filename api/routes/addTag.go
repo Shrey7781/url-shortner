@@ -5,16 +5,14 @@ import (
 	"net/http"
 
 	"github.com/Shrey7781/url-shortner/api/database"
+	"github.com/Shrey7781/url-shortner/api/models"
 	"github.com/gin-gonic/gin"
 )
 
-type TagRequest struct {
-	ShortID string `json:"shortid"`
-	Tag     string `json:"tag"`
-}
+
 
 func AddTag(c *gin.Context) {
-	var tagRequest TagRequest
+	var tagRequest models.TagRequest
 	if err := c.ShouldBind(&tagRequest); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Invalid Request Body",

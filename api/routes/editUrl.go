@@ -20,17 +20,14 @@ func EditURL(c *gin.Context){
 		return
 	} 
 
-	r:=database.CreateClient(0)
-	defer r.Close()
-
-	val,err:= r.Get(database.Ctx,shortID).Result()
+	val,err:= database.Client.Get(database.Ctx,shortID).Result()
 	if err!=nil || val==""{
 		c.JSON(http.StatusNotFound, gin.H{
 			"error":"ShortID dosen't exists",
 		})
 		return
 	}
-	err = r.Set(database.Ctx, shortID, body.URL, time.Duration(body.Expiry)*time.Hour).Err()
+	err = database.Client.Set(database.Ctx, shortID, body.URL, time.Duration(body.Expiry)*time.Hour).Err()
 	if err!=nil{
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error":"Unable to update the shortend content",

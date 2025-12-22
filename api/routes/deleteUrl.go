@@ -10,9 +10,7 @@ import (
 
 func DeleteURL(c *gin.Context) {
 	shortID := c.Param("shortID")
-	r := database.CreateClient(0)
-	defer r.Close()
-	val, err := r.Get(database.Ctx, shortID).Result()
+	val, err := database.Client.Get(database.Ctx, shortID).Result()
 	
 	if err == redis.Nil || val == "" {
 		c.JSON(http.StatusNotFound, gin.H{
@@ -27,7 +25,7 @@ func DeleteURL(c *gin.Context) {
 		return
 	}
 
-	err = r.Del(database.Ctx, shortID).Err()
+	err = database.Client.Del(database.Ctx, shortID).Err()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Unable to Delete shortend link",
