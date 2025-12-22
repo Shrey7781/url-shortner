@@ -18,7 +18,7 @@ import (
 )
 
 func ShortenURL(c *gin.Context) {
-	var body models.Requset
+	var body models.Request
 
 	if err := c.ShouldBind(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Cannot Parse JSON"})
@@ -30,7 +30,7 @@ func ShortenURL(c *gin.Context) {
 
 	val, err := r2.Get(database.Ctx, c.ClientIP()).Result()
 
-	if err == redis.Nil {
+	if err == redis.Nil || val == "" {
 		_ = r2.Set(database.Ctx, c.ClientIP(), os.Getenv("API_QUOTA"), 30*60*time.Second).Err()
 	} else {
 		val, _ = r2.Get(database.Ctx, c.ClientIP()).Result()
@@ -84,11 +84,9 @@ func ShortenURL(c *gin.Context) {
 	if body.Expiry == 0 {
 		body.Expiry = 24
 	}
-	r.Set(database.Ctx, id, body.URL, body.Expiry*3600*time.Second).Err()
+	err = r.Set(database.Ctx, id, body.URL, time.Duration(body.Expiry)*time.Hour).Err()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Unable to connect to the redis server",
-		})
+		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -99,12 +97,13 @@ func ShortenURL(c *gin.Context) {
 		URL:             body.URL,
 		CustomShort:     "",
 	}
-	r2.Decr(database.Ctx,c.ClientIP())
-	val,_=r2.Get(database.Ctx,c.ClientIP()).Result()
-	resp.XRateRemaining,_=strconv.Atoi(val)
+	r2.Decr(database.Ctx, c.ClientIP())
+	val, _ = r2.Get(database.Ctx, c.ClientIP()).Result()
+	resp.XRateRemaining, _ = strconv.Atoi(val)
 
-	ttl,_:=r2.TTL(database.Ctx,c.ClientIP()).Result()
-	resp.XRateLimitReset= ttl/time.Nanosecond/time.Minute
+	ttl, _ := r2.TTL(database.Ctx, c.ClientIP()).Result()
+	resp.XRateLimitReset = time.Duration(int(ttl.Minutes())) * time.Minute
 
-	 resp.CustomShort= os.Getenv("DOMAIN")+"/"+id
+	resp.CustomShort = os.Getenv("DOMAIN") + "/" + id
+	c.JSON(http.StatusOK, resp)
 }

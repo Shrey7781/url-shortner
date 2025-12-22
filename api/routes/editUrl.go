@@ -11,12 +11,13 @@ import (
 
 func EditURL(c *gin.Context){
 	shortID:=c.Param("shortID")
-	var body models.Requset
+	var body models.Request
 
 	if err:=c.ShouldBind(&body);err!=nil{
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Cannot Parse JSON",
 		})
+		return
 	} 
 
 	r:=database.CreateClient(0)
@@ -29,7 +30,7 @@ func EditURL(c *gin.Context){
 		})
 		return
 	}
-	err=r.Set(database.Ctx,shortID,body.URL,body.Expiry*3600*time.Second).Err()
+	err = r.Set(database.Ctx, shortID, body.URL, time.Duration(body.Expiry)*time.Hour).Err()
 	if err!=nil{
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error":"Unable to update the shortend content",
