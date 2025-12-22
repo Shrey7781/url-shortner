@@ -1,20 +1,24 @@
-🚀 URL Shortener (Golang + Gin + Redis)
+🚀 URL Shortener 
+_______________________________________________________________________________________
+(Golang + Gin + Redis)
 A fast, scalable URL shortening service built with Go, Gin, Redis, and Docker Compose.
 
 Supports custom short IDs, expiration, tagging, rate-limiting, and analytics.
 This README includes:
 ✔ Full project overview
-
+_____________________________________________________________
 ✔ All API endpoints with JSON request/response
-
+_____________________________________________________________
 ✔ Docker & docker-compose instructions
-
+_________________________________________________________________
 ✔ Redis setup
-
+________________________________________________________________
 ✔ Frontend integration guide
-
+______________________________________________________________
 ✔ Folder & architecture overview
+_____________________________________________________________
 📘 1. Overview
+________________
 This project provides a backend microservice that allows users to:
 
 Generate short URLs
@@ -31,6 +35,7 @@ The service is optimized for:
 🐳 Full containerization
 🌐 Easy frontend integration (JSON APIs)
 📂 2. Project Structure
+_______________________
 
 url-shortner/
 │
@@ -55,11 +60,15 @@ url-shortner/
 ├── go.mod
 └── .env
 📦 3. Environment Variables
+____________________________
 Your .env file should contain:
 
+DOMAIN=http://localhost:8080
+REDIS_ADDR=redis:6379
+REDIS_PASSWORD=RATE_LIMIT=10
 
-DOMAIN=http://localhost:8080REDIS_ADDR=redis:6379REDIS_PASSWORD=RATE_LIMIT=10
 🐳 4. Run With Docker Compose
+_________________________________
 Start backend + Redis:
 
 docker compose up --build
@@ -69,8 +78,11 @@ Backend is now available at:
 
 
 http://localhost:8080
+
 🔌 5. API Endpoints (Complete Documentation)
+________________________________________
 ✅ 5.1 Create Short URL
+__________________________________
 POST /api/shorten
 Request Body
 
@@ -88,7 +100,9 @@ Response
   "rate_limit": 9,
   "rate_limit_reset": 30}
 The backend applies Redis-based rate limiting per IP.
+
 🔁 5.2 Resolve Short URL (Redirect)
+__________________________________
 GET /:shortID
 Example:
 
@@ -99,6 +113,7 @@ Server returns:
 
 302 FoundLocation: https://example.com/long/path
 🔍 5.3 Get URL Metadata
+______________________________________
 GET /api/geturl/:shortID
 Response:
 
@@ -109,6 +124,7 @@ Response:
   "expiry": 30,
   "created_at": "2025-01-01T08:00:00Z"}
 ✏️ 5.4 Edit URL
+______________________________________
 PUT /api/editurl
 Request
 
@@ -143,6 +159,7 @@ Response
   "message": "Tag added successfully",
   "tag": "marketing"}
 🧰 6. Models (from your code)
+________________________________________
 Request Model (shorten)
 
 type Request struct {
@@ -166,6 +183,7 @@ type Response struct {
     XRateLimitReset int    `json:"rate_limit_reset"`
 }
 🧑‍💻 7. Frontend Developer Guide
+____________________________________
 Base URL:
 
 http://localhost:8080
@@ -183,7 +201,8 @@ const res = await fetch("http://localhost:8080/api/shorten", {
 Example: Redirect user
 
 window.location.href = "http://localhost:8080/ggl";
-🏛 8. Redis Usage (from your code)
+🏛 8. Redis Usage 
+_______________________________________________________
 Redis is used for:
 
 URL storage
@@ -198,7 +217,9 @@ Rate limit:
 
 
 key: <Client IP>value: remaining_requestsTTL: limit reset time
+
 🧪 9. Testing with cURL
+______________________________________
 Create URL
 
 curl -X POST http://localhost:8080/api/shorten \
@@ -212,5 +233,7 @@ Add Tag
 curl -X PUT http://localhost:8080/api/addtag \
   -H "Content-Type: application/json" \
   -d '{"shortid":"abc123","tag":"social"}'
+  
 🤝 10. Contributing
+____________________________________________
 PRs and issues are welcome.
