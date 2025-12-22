@@ -6,9 +6,9 @@ services:
     ports:
       - "8000:8080"
     environment:
-      - DB_ADDR=db:6379      # Point to the 'db' service name
-      - DB_PASS=             # Redis default has no password
-      - API_QUOTA=100        # Make sure this is set for your logic
+      - DB_ADDR=db:6379      
+      - DB_PASS=            
+      - API_QUOTA=10        
       - DOMAIN=localhost:8000
       - APP_PORT=8080
     depends_on:

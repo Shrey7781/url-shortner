@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -24,6 +24,10 @@ func ShortenURL(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Cannot Parse JSON"})
 		return
 	}
+	if body.URL == "" {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "URL field is required"})
+        return
+    }
 
 	r2 := database.CreateClient(1)
 	defer r2.Close()
@@ -45,22 +49,25 @@ func ShortenURL(c *gin.Context) {
 			return
 		}
 	}
+	body.URL = utils.EnsureHttpPrefix(body.URL)
+	fmt.Printf("Validating URL: [%s]\n", body.URL)
 
-	if !govalidator.IsURL(body.URL) {
+	if !govalidator.IsRequestURL(body.URL) && !govalidator.IsURL(body.URL) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Invalid URL",
+			"debug_received": body.URL,
 		})
 		return
 	}
 
-	if utils.IsDifferentDomain(body.URL) {
+	if utils.IsServiceDomain(body.URL) {
 		c.JSON(http.StatusServiceUnavailable, gin.H{
 			"error": "You can't hack this System :)",
 		})
 		return
 	}
 
-	body.URL = utils.EnsureHttpPrefix(body.URL)
+	
 
 	var id string
 
@@ -102,7 +109,7 @@ func ShortenURL(c *gin.Context) {
 	resp.XRateRemaining, _ = strconv.Atoi(val)
 
 	ttl, _ := r2.TTL(database.Ctx, c.ClientIP()).Result()
-	resp.XRateLimitReset = time.Duration(int(ttl.Minutes())) * time.Minute
+	resp.XRateLimitReset = int(ttl.Minutes())
 
 	resp.CustomShort = os.Getenv("DOMAIN") + "/" + id
 	c.JSON(http.StatusOK, resp)

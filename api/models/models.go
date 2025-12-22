@@ -1,6 +1,6 @@
 package models
 
-import "time"
+
 
 type Request struct {
 	URL         string        `json:"url"`
@@ -13,5 +13,5 @@ type Response struct {
 	CustomShort     string        `json:"short"`
 	Expiry          int `json:"expiry"`
 	XRateRemaining  int           `json:"rate_limit"`
-	XRateLimitReset time.Duration `json:"rate_limit_reset"`
+	XRateLimitReset int`json:"rate_limit_reset"`
 }

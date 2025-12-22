@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-func IsDifferentDomain(url string) bool {
+func IsServiceDomain(url string) bool {
 	domain := os.Getenv("DOMAIN")
 	if url == domain {
 		return false
@@ -16,12 +16,13 @@ func IsDifferentDomain(url string) bool {
 	cleanURL = strings.TrimPrefix(cleanURL, "www.")
 	cleanURL = strings.Split(cleanURL, "/")[0]
 
-	return cleanURL != domain
+	return cleanURL == domain
 }
 
 func EnsureHttpPrefix(url string) string {
-	if !strings.HasPrefix(url, "http://") || !strings.HasPrefix(url, "https://") {
-		return "http://" + url
+	url = strings.TrimSpace(url)
+	if strings.HasPrefix(url, "http://") || strings.HasPrefix(url, "https://") {
+		return url
 	}
-	return url
+	return "http://" + url
 }
