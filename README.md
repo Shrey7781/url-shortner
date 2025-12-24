@@ -131,10 +131,6 @@ All APIs are JSON-based and frontend-ready. Works well with React, Vue, or Next.
 
 ---
 
-## 📄 License
-Open-source.
----
-
 ## 🔌 API Endpoints Table
 
 | Method | Endpoint | Description | Request Body | Response |
