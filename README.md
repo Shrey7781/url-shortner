@@ -4,6 +4,7 @@ A production-ready URL Shortener backend built using Go, Gin, and Redis, featuri
 
 ---
 
+
 ## 📌 Features
 - Create short URLs
 - Custom short IDs
@@ -123,6 +124,11 @@ POST /api/v1/addTag
   "tag": "marketing"
 }
 ```
+
+---
+## 🏗 Architecture Diagram
+
+![Architecture Diagram](url_shortener_architecture.png)
 
 ---
 
